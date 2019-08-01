@@ -19,4 +19,4 @@ app.use('/useragent', async (req, res) => {
   `);
 })
 
-app.listen(8080, 'localhost');
+const server = app.listen(process.env.PORT || 8080, 'localhost');

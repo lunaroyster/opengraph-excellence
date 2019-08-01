@@ -1,0 +1,2 @@
+service: opengraph-excellence
+runtime: nodejs10
