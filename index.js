@@ -22,24 +22,33 @@ app.use('/useragent', async (req, res) => {
 });
 
 const fetchAsAgent = async (url, agent) => {
-  let r = await axios.get(url, {
-    headers: {
-      ...(agent ? {'User-Agent': agent} : {})
+  try {
+    let r = await axios.get(url, {
+      headers: {
+        ...(agent ? {'User-Agent': agent} : {}),
+        Accept: '*/*',
+      }
+    });
+    return {
+      userAgent: r.config.headers['User-Agent'],
+      length: r.data.length,
+      hash: crypto.createHash('md5').update(r.data).digest('hex'),
+      // data: r.data,
+    };
+  } catch (e) {
+    console.log(e)
+    return {
+      message: e.message,
     }
-  });
-  return {
-    userAgent: r.config.headers['User-Agent'],
-    length: r.data.length,
-    hash: crypto.createHash('md5').update(r.data).digest('hex'),
-    // data: r.data,
-  };
+  }
 }
 
 app.use('/prerendering', async (req, res) => {
   const { url } = req.query;
   let results = [];
-  results.push(await fetchAsAgent(url));
+  results.push(await fetchAsAgent(url, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36'));
   results.push(await fetchAsAgent(url, 'Twitterbot'));
+  results.push(await fetchAsAgent(url, 'DiscordBot'));
   results.push(await fetchAsAgent(url, 'GoogleBot'));
   res.send({results});
 })
