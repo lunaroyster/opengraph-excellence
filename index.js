@@ -1,4 +1,5 @@
 const express = require('express');
+const crypto = require('crypto');
 const axios = require('axios');
 
 const app = new express();
@@ -29,6 +30,7 @@ const fetchAsAgent = async (url, agent) => {
   return {
     userAgent: r.config.headers['User-Agent'],
     length: r.data.length,
+    hash: crypto.createHash('md5').update(r.data).digest('hex'),
     // data: r.data,
   };
 }
